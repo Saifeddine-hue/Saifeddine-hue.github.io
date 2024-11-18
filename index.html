@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande Café</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-size: 16px;
+            margin: 10px 0;
+            display: block;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .order-summary {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .order-summary h3 {
+            margin-bottom: 15px;
+        }
+
+        .order-summary p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Passer une commande</h1>
+
+        <form id="orderForm">
+            <label for="product">Choisissez votre produit</label>
+            <select id="product" required>
+                <option value="Café">Café</option>
+                <option value="Thé">Thé</option>
+                <option value="Croissant">Croissant</option>
+                <option value="Pain au chocolat">Pain au chocolat</option>
+            </select>
+
+            <label for="quantity">Quantité</label>
+            <input type="number" id="quantity" value="1" min="1" required>
+
+            <label for="customerName">Nom</label>
+            <input type="text" id="customerName" placeholder="Votre nom" required>
+
+            <button type="submit">Passer la commande</button>
+        </form>
+
+        <div class="order-summary" id="orderSummary" style="display:none;">
+            <h3>Résumé de votre commande :</h3>
+            <p><strong>Produit :</strong> <span id="orderProduct"></span></p>
+            <p><strong>Quantité :</strong> <span id="orderQuantity"></span></p>
+            <p><strong>Nom :</strong> <span id="orderCustomerName"></span></p>
+            <button id="confirmOrderBtn">Confirmer la commande</button>
+        </div>
+    </div>
+
+    <script>
+        // Sélectionner les éléments du DOM
+        const orderForm = document.getElementById('orderForm');
+        const productSelect = document.getElementById('product');
+        const quantityInput = document.getElementById('quantity');
+        const customerNameInput = document.getElementById('customerName');
+        const orderSummary = document.getElementById('orderSummary');
+        const orderProduct = document.getElementById('orderProduct');
+        const orderQuantity = document.getElementById('orderQuantity');
+        const orderCustomerName = document.getElementById('orderCustomerName');
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+
+        // Event listener pour soumettre le formulaire
+        orderForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Récupérer les données du formulaire
+            const product = productSelect.value;
+            const quantity = quantityInput.value;
+            const customerName = customerNameInput.value;
+
+            // Afficher le récapitulatif de la commande
+            orderProduct.textContent = product;
+            orderQuantity.textContent = quantity;
+            orderCustomerName.textContent = customerName;
+            orderSummary.style.display = 'block';
+
+            // Réinitialiser le formulaire
+            orderForm.reset();
+        });
+
+        // Event listener pour confirmer la commande
+        confirmOrderBtn.addEventListener('click', function() {
+            // Récupérer les données de la commande
+            const product = orderProduct.textContent;
+            const quantity = orderQuantity.textContent;
+            const customerName = orderCustomerName.textContent;
+
+            // Créer un objet de commande
+            const orderData = {
+                product: product,
+                quantity: quantity,
+                customerName: customerName
+            };
+
+            // Envoyer la commande à une API
+            fetch('https://example.com/api/commander', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Commande envoyée avec succès !');
+                // Réinitialiser l'interface
+                orderSummary.style.display = 'none';
+            })
+            .catch(error => {
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                console.error(error);
+            });
+        });
+    </script>
+</body>
+</html>
